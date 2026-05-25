@@ -453,7 +453,6 @@
         // ТОЧНЫЕ ДАННЫЕ ИЗ ГОСТ Р 54475-2011
         // ==============================================
         
-        // Данные для серии DN/OD (таблица 1 ГОСТ Р 54475-2011)
         const STRUCT_OD_DATA = {
             110: { id_min: 90 },
             125: { id_min: 105 },
@@ -469,7 +468,6 @@
             1200: { id_min: 1005 }
         };
         
-        // Данные для серии DN/ID (таблица 1 ГОСТ Р 54475-2011)
         const STRUCT_ID_DATA = {
             200: { id_min: 195 },
             300: { id_min: 294 },
@@ -479,7 +477,6 @@
             800: { id_min: 785 }
         };
         
-        // Наружные диаметры для серии DN/ID (справочные данные производителей)
         const STRUCT_ID_OD_BY_SN = {
             200: { SN4: 268, SN8: 280, SN16: 300 },
             300: { SN4: 394, SN8: 410, SN16: 430 },
@@ -520,10 +517,8 @@
             }
         };
         
-        // Коэффициент шероховатости 
         const K_EQUIV = { "PE": 0.014 };
         
-        // Гидравлические параметры
         const GRAVITY_PARAMS = {
             0.10: { r: 0.0635, ratio: 0.2540, k0: 0.0409 },
             0.20: { r: 0.1206, ratio: 0.4824, k0: 0.1118 },
@@ -653,33 +648,6 @@
             if (nominalDiameter && sn) {
                 selectedStructSN = sn;
                 selectedStructDiameter = nominalDiameter;
-                
-                let innerDiameter = null;
-                let outerDiameter = null;
-                
-                if (series === 'OD') {
-                    outerDiameter = nominalDiameter;
-                    const odData = STRUCT_OD_DATA[nominalDiameter];
-                    if (odData) {
-                        innerDiameter = odData.id_min;
-                    }
-                } else {
-                    innerDiameter = nominalDiameter;
-                    const idData = STRUCT_ID_DATA[nominalDiameter];
-                    if (idData) {
-                        innerDiameter = idData.id_min;
-                    }
-                    const odBySn = STRUCT_ID_OD_BY_SN[nominalDiameter];
-                    if (odBySn && odBySn[`SN${sn}`]) {
-                        outerDiameter = odBySn[`SN${sn}`];
-                    } else {
-                        outerDiameter = nominalDiameter + 80;
-                    }
-                }
-                
-                if (innerDiameter) {
-                    window.structInnerDiameter = innerDiameter;
-                }
             }
         }
         
@@ -730,7 +698,6 @@
             const odFromSelect = document.getElementById('press-diameter-select').value;
             
             let od, sdr;
-            
             const idManual = parseFloat(document.getElementById('press-id-manual').value);
             
             if (!isNaN(idManual) && idManual > 0) {
@@ -792,7 +759,6 @@
             let snOrSdrValue = null;
             
             if (gostRaw === '54475') {
-                // Структурированные трубы - используем выбранные из селекторов
                 const series = document.getElementById('struct-series').value;
                 const nominalDiameter = parseFloat(document.getElementById('grav-diameter-select').value);
                 const sn = parseFloat(document.getElementById('struct-sn').value);
@@ -826,7 +792,6 @@
                     return;
                 }
             } else {
-                // ПЭ100 трубы
                 const idManual = parseFloat(document.getElementById('pe100-id-manual').value);
                 
                 if (!isNaN(idManual) && idManual > 0) {
@@ -927,31 +892,19 @@
                     
                     <h4>Серия DN/OD (по наружному диаметру)</h4>
                     <table style="width:100%; border-collapse: collapse; margin-bottom:20px;">
-                        <tr style="background:#f0f0f0;">
-                            <th style="padding:8px; text-align:left;">Наружный диаметр DN/OD, мм</th>
-                            <th style="padding:8px; text-align:left;">Внутренний диаметр (min), мм</th>
-                        </tr>`;
+                        <tr style="background:#f0f0f0;"><th style="padding:8px; text-align:left;">Наружный диаметр DN/OD, мм</th><th style="padding:8px; text-align:left;">Внутренний диаметр (min), мм</th></tr>`;
                 
                 for (const [od, data] of Object.entries(STRUCT_OD_DATA)) {
-                    html += `<tr>
-                        <td style="padding:8px; border-bottom:1px solid #ddd;">${od}</td>
-                        <td style="padding:8px; border-bottom:1px solid #ddd;">${data.id_min}</td>
-                    </tr>`;
+                    html += `<tr><td style="padding:8px; border-bottom:1px solid #ddd;">${od}</td><td style="padding:8px; border-bottom:1px solid #ddd;">${data.id_min}</td></tr>`;
                 }
                 
                 html += `</table>
                     <h4>Серия DN/ID (по внутреннему диаметру)</h4>
                     <table style="width:100%; border-collapse: collapse;">
-                        <tr style="background:#f0f0f0;">
-                            <th style="padding:8px; text-align:left;">Внутренний диаметр DN/ID, мм</th>
-                            <th style="padding:8px; text-align:left;">Внутренний диаметр (min), мм</th>
-                        </tr>`;
+                        <tr style="background:#f0f0f0;"><th style="padding:8px; text-align:left;">Внутренний диаметр DN/ID, мм</th><th style="padding:8px; text-align:left;">Внутренний диаметр (min), мм</th></tr>`;
                 
                 for (const [id, data] of Object.entries(STRUCT_ID_DATA)) {
-                    html += `<tr>
-                        <td style="padding:8px; border-bottom:1px solid #ddd;">${id}</td>
-                        <td style="padding:8px; border-bottom:1px solid #ddd;">${data.id_min}</td>
-                    </tr>`;
+                    html += `<tr><td style="padding:8px; border-bottom:1px solid #ddd;">${id}</td><td style="padding:8px; border-bottom:1px solid #ddd;">${data.id_min}</td></tr>`;
                 }
                 
                 html += `</table>
@@ -973,23 +926,16 @@
             let html = `<div style="overflow-x: auto;">
                 <h4>${sizes.name}</h4>
                 <p><strong>Тип:</strong> ${sizes.type === 'pressure' ? 'Напорные' : 'Самотечные/безнапорные'}</p>`;
-            
-            if (sizes.od_diameters) {
-                html += `<p><strong>Наружные диаметры (мм):</strong> ${sizes.od_diameters.join(', ')}</p>`;
-            }
-            if (sizes.sdr_list) {
-                html += `<p><strong>Доступные SDR:</strong> ${sizes.sdr_list.join(', ')}</p>`;
-            }
+            if (sizes.od_diameters) html += `<p><strong>Наружные диаметры (мм):</strong> ${sizes.od_diameters.join(', ')}</p>`;
+            if (sizes.sdr_list) html += `<p><strong>Доступные SDR:</strong> ${sizes.sdr_list.join(', ')}</p>`;
             html += `</div>`;
             container.innerHTML = html;
         }
         
-        // Инициализация
+        // Инициализация — только заполняем списки, без автоматического расчёта
         window.onload = () => {
             updatePressureParams();
             updateGravityParams();
-            calculatePressure();
-            calculateGravity();
             showStandardSizes();
         };
     </script>
